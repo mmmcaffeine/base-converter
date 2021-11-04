@@ -28,5 +28,27 @@ namespace Dgt.BaseConverter.Benchmarks
         [ArgumentsSource(nameof(DividendsAndDivisors))]
         public (int Quotient, int Remainder) Divide_Using_CalculatorDivide(int dividend, int divisor) =>
             Calculator.Divide(dividend, divisor);
+
+        // This is clearly not a robust implementation, and only exists for us to get an idea about whether the
+        // performance of this is worth pursuing
+        [Benchmark]
+        [ArgumentsSource(nameof(DividendsAndDivisors))]
+        public (int Quotient, int Remainder) Divide_Using_BitShifting(int dividend, int divisor)
+        {
+            var unsignedDividend = (uint)dividend;
+            var unsignedDivisor = (uint)divisor;
+
+            long answer = 0;
+            for (var i = 28; i >= 0; i--)
+            {
+                if (unsignedDivisor << i <= unsignedDividend)
+                {
+                    unsignedDividend -= unsignedDivisor << i;
+                    answer += 1 << i;
+                }
+            }
+
+            return ((int)answer, (int)(dividend - answer));
+        }
     }
 }
