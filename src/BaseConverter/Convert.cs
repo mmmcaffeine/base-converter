@@ -34,7 +34,7 @@ namespace Dgt.BaseConverter
             if (value == 0) return "0";
             
             var quotient = value;
-            var chars = new Stack<char>();
+            var asciiCodes = new List<int>();
 
             while (quotient > 0)
             {
@@ -42,10 +42,16 @@ namespace Dgt.BaseConverter
                 var asciiCode = remainder < 10
                     ? remainder + AsciiCodeFor0
                     : remainder + AsciiCodeForA - 10;
-                chars.Push((char)asciiCode);
+                asciiCodes.Add(asciiCode);
             }
 
-            return new string(chars.ToArray());
+            return string.Create(asciiCodes.Count, asciiCodes, (span, state) =>
+            {
+                for (int i = 0, j = span.Length - 1; i < state.Count; i++, j--)
+                {
+                    span[j] = (char)state[i];
+                }
+            });
         }
     }
 }
