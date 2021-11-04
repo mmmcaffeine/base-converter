@@ -76,5 +76,18 @@ namespace Dgt.BaseConverter.Benchmarks
 
             return builder.ToString();
         }
+
+        [Benchmark]
+        [ArgumentsSource(nameof(Characters))]
+        public string String_Using_StringCreate(char[] characters)
+        {
+            return string.Create(characters.Length, characters, (span, state) =>
+            {
+                for (int i = 0, j = characters.Length - 1; i < characters.Length; i++, j--)
+                {
+                    span[j] = state[i];
+                }
+            });
+        }
     }
 }
